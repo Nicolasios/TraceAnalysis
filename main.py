@@ -1,6 +1,12 @@
-from reader.Reader import Reader
+from HelpClass.DataReader import *
 
-a = Reader()
-data = a.read("../test.csv")
+reader = DataReader("msr-cambridge2/MSR-Cambridge/web_4.csv")
+reader.read()
+# pd_reader = reader.getPdReader()
+# ionum = reader.get_IONums()
 
-print(data.head(2))
+dic = reader.getAddressAccessNums()
+list = reader.getUniqueAddress()
+print(dic)
+print('------------------------------------------')
+print(list)
