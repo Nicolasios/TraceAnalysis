@@ -2,5 +2,5 @@ from HelpClass.DataReader import *
 
 reader = DataReader("msr-cambridge2/MSR-Cambridge/web_4.csv")
 reader.read()
-
-print(reader.getSliceTrace())
+reader.getSliceTrace()
+print(reader.getTimeDistance())
