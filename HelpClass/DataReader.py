@@ -9,6 +9,8 @@ class DataReader():
         self.IONums = 0
         self.AddressAccessNum = {}
         self.UniqueAddressAccess = []
+        self.FrequenceClass = {}
+        self.SliceTrace = []
 
     def read(self):
         self.pd_reader = pd.read_csv(
@@ -46,8 +48,30 @@ class DataReader():
                 self.UniqueAddressAccess.append(key)
         return self.UniqueAddressAccess
 
-    def TimeDistance():
+    def getFrequenceClass(self):
+        for key, value in self.AddressAccessNum.items():
+            if value in self.FrequenceClass.keys():
+                self.FrequenceClass[value] += 1
+            else:
+                self.FrequenceClass[value] = 1
+        return self.FrequenceClass
+
+    def getSliceTrace(self):
+        SliceTrace = self.pd_reader['Offset'].values.tolist()
+        TraceSize = self.pd_reader['Size'].values.tolist()
+        size = len(TraceSize)
+        for i in range(size):
+            for k in range(int(TraceSize[i]/521)):
+                self.SliceTrace.append(SliceTrace[i]+k*512)
+        return self.SliceTrace
+
+    def TimeDistance(self):
         pass
 
-    def ReuseDistance():
+    def ReuseDistance(self):
         pass
+
+
+'''
+a b c a c b 
+'''
