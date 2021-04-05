@@ -3,6 +3,8 @@ from HelpClass.BalanceTree import AVTree
 
 MAX = 100000000
 
+MAX = 100000000
+
 
 class DataReader():
 
@@ -15,9 +17,14 @@ class DataReader():
         self.FrequenceClass = {}
         self.SliceTrace = []
         self.TimeDistance = []
-        self.getReuseDistance = []
 
-    def read(self):
+
+<< << << < HEAD
+   self.getReuseDistance = []
+== == == =
+>>>>>> > 51974416d614b1b22698ffb6cbe0e71802d2df9c
+
+   def read(self):
         self.pd_reader = pd.read_csv(
             self.filename,
             names=[
@@ -96,7 +103,6 @@ class DataReader():
         return self.TimeDistance
 
     def distance(self, tree, addr, timestamp):
-
 '''
 abccabadadacadaac
 '''
