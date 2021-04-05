@@ -17,12 +17,7 @@ class DataReader():
         self.FrequenceClass = {}
         self.SliceTrace = []
         self.TimeDistance = []
-
-
-<< << << < HEAD
-   self.getReuseDistance = []
-== == == =
->>>>>> > 51974416d614b1b22698ffb6cbe0e71802d2df9c
+        self.getReuseDistance = []
 
    def read(self):
         self.pd_reader = pd.read_csv(
@@ -103,6 +98,7 @@ class DataReader():
         return self.TimeDistance
 
     def distance(self, tree, addr, timestamp):
+        pass
 '''
 abccabadadacadaac
 '''
