@@ -3,8 +3,6 @@ from HelpClass.BalanceTree import AVTree
 
 MAX = 100000000
 
-MAX = 100000000
-
 
 class DataReader():
 
