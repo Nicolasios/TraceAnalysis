@@ -1,4 +1,7 @@
 import pandas as pd
+from HelpClass.BalanceTree import AVTree
+
+MAX = 100000000
 
 
 class DataReader():
@@ -11,6 +14,8 @@ class DataReader():
         self.UniqueAddressAccess = []
         self.FrequenceClass = {}
         self.SliceTrace = []
+        self.TimeDistance = []
+        self.getReuseDistance = []
 
     def read(self):
         self.pd_reader = pd.read_csv(
@@ -65,13 +70,33 @@ class DataReader():
                 self.SliceTrace.append(SliceTrace[i]+k*512)
         return self.SliceTrace
 
-    def TimeDistance(self):
-        pass
+    def getTimeDistance(self):
+        AppearIndex = {}
+        for i in range(len(self.SliceTrace)):
+            if self.SliceTrace[i] in AppearIndex.keys():
+                self.TimeDistance.append(i-AppearIndex[self.SliceTrace[i]])
+                AppearIndex[self.SliceTrace[i]] = i
+            else:
+                self.TimeDistance.append(MAX)
+                AppearIndex[self.SliceTrace[i]] = i
+        return self.TimeDistance
 
-    def ReuseDistance(self):
-        pass
+    def getReuseDistance(self):
+        tree = AVTree()
+        AppearIndex = {}
+        for i in range(len(self.SliceTrace)):
+            if self.SliceTrace[i] in AppearIndex.keys():
+                self.TimeDistance.append(
+                    self.distance(tree, self.SliceTrace[i], i))
+                AppearIndex[self.SliceTrace[i]] = i
+            else:
+                tree.addToTree(i, self.SliceTrace)
+                self.TimeDistance.append(MAX)
+                AppearIndex[self.SliceTrace[i]] = i
+        return self.TimeDistance
 
+    def distance(self, tree, addr, timestamp):
 
 '''
-a b c a c b 
+abccabadadacadaac
 '''
