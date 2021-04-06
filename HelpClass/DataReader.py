@@ -15,9 +15,9 @@ class DataReader():
         self.FrequenceClass = {}
         self.SliceTrace = []
         self.TimeDistance = []
-        self.getReuseDistance = []
+        self.ReuseDistance = []
 
-   def read(self):
+    def read(self):
         self.pd_reader = pd.read_csv(
             self.filename,
             names=[
@@ -86,17 +86,29 @@ class DataReader():
         AppearIndex = {}
         for i in range(len(self.SliceTrace)):
             if self.SliceTrace[i] in AppearIndex.keys():
-                self.TimeDistance.append(
-                    self.distance(tree, self.SliceTrace[i], i))
+                self.ReuseDistance.append(
+                    self.distance(tree, i))
+                tree.removeFromTree(i)
+                tree.updateWeight(tree.root)
                 AppearIndex[self.SliceTrace[i]] = i
             else:
-                tree.addToTree(i, self.SliceTrace)
-                self.TimeDistance.append(MAX)
+                tree.addToTree(i, self.SliceTrace[i])
+                tree.updateWeight(tree.root)
+                self.ReuseDistance.append(MAX)
                 AppearIndex[self.SliceTrace[i]] = i
-        return self.TimeDistance
+        return self.ReuseDistance
 
-    def distance(self, tree, addr, timestamp):
-        pass
-'''
-abccabadadacadaac
-'''
+    def distance(self, tree, timestamp):
+        temp = tree.root
+        distance = 0
+        while temp is not None:
+            if temp.key < timestamp:
+                temp = temp.right
+            elif temp.key > timestamp:
+                d += 1
+                if temp.right:
+                    d += temp.right.weight
+                temp = temp.left
+            else:
+                d += temp.right.weight
+                return d

@@ -58,7 +58,7 @@ class AVTree:
         else:
             return self.getNode(node.right, key)
 
-    def LeftRotate(self, y):
+    def RightRotate(self, y):
         x = y.left
         y.left = x.right
         x.right = y
@@ -68,7 +68,7 @@ class AVTree:
                        self.getHeight(x.right))+1
         return x
 
-    def RightRotate(self, y):
+    def LeftRotate(self, y):
         x = y.right
         y.right = x.left
         x.left = y
@@ -89,7 +89,7 @@ class AVTree:
         else:
             node.right = self.add(node.right, key, value)
         node.height = max(self.getHeight(node.right),
-                          self.getHeight(node.left))
+                          self.getHeight(node.left))+1
         diff = self.LRHeightDiff(node)
         if diff > 1 and self.LRHeightDiff(node.left) >= 0:
             return self.RightRotate(node)
@@ -103,13 +103,13 @@ class AVTree:
             return self.LeftRotate(node)
         return node
 
-    def addToTree(self，key, value):
+    def addToTree(self, key, value):
         self.root = self.add(self.root, key, value)
 
     def minimum(self, node):
         if not node.left:
             return node
-         return self.minmum(node.left)
+        return self.minmum(node.left)
 
     def remove(self, node, key):
         if not node:
@@ -140,7 +140,7 @@ class AVTree:
         if not ret_node:
             return
         ret_node.height = max(self.getHeight(ret_node.left),
-                              self.getHeight(ret_node.right))
+                              self.getHeight(ret_node.right))+1
         diff = self.LRHeightDiff(ret_node)
         if diff > 1 and self.LRHeightDiff(ret_node.left) >= 0:
             return self.RightRotate(ret_node)
@@ -154,16 +154,17 @@ class AVTree:
             return self.LeftRotate(ret_node)
         return ret_node
 
-    def removeFromTree(self,key):
-        node = self.getNode(self.root,key)
+    def removeFromTree(self, key):
+        node = self.getNode(self.root, key)
         if node:
-            self.root = self.remove(self.root,key)
+            self.root = self.remove(self.root, key)
 
-    def updateWeight(self,node):
+    def updateWeight(self, node):
         if not node:
             return 0
         else:
             if node.left:
-                node.weight += updateWeight(node.left)
+                node.weight += self.updateWeight(node.left)
             if node.right:
-                node.weight += updateWeight(node.right)
+                node.weight += self.updateWeight(node.right)
+            return node.weight
