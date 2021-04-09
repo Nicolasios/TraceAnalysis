@@ -17,6 +17,11 @@ class AVTree:
             return 0
         return node.height
 
+    def getWeight(self, node):
+        if not node:
+            return 0
+        return node.weight
+
     def LRHeightDiff(self, node):
         if not node:
             return 0
@@ -66,6 +71,9 @@ class AVTree:
                        self.getHeight(y.right))+1
         x.height = max(self.getHeight(x.left),
                        self.getHeight(x.right))+1
+
+        y.weight = self.getWeight(y.left)+self.getWeight(y.right)+1
+        x.weight = self.getWeight(x.left)+self.getWeight(x.right)+1
         return x
 
     def LeftRotate(self, y):
@@ -76,6 +84,9 @@ class AVTree:
                        self.getHeight(y.right))+1
         x.height = max(self.getHeight(x.left),
                        self.getHeight(x.right))+1
+
+        y.weight = self.getWeight(y.left)+self.getWeight(y.right)+1
+        x.weight = self.getWeight(x.left)+self.getWeight(x.right)+1
         return x
 
     def add(self, node, key, value):
@@ -90,6 +101,7 @@ class AVTree:
             node.right = self.add(node.right, key, value)
         node.height = max(self.getHeight(node.right),
                           self.getHeight(node.left))+1
+        node.weight = self.getWeight(node.left)+self.getWeight(node.right)+1
         diff = self.LRHeightDiff(node)
         if diff > 1 and self.LRHeightDiff(node.left) >= 0:
             return self.RightRotate(node)
@@ -109,7 +121,7 @@ class AVTree:
     def minimum(self, node):
         if not node.left:
             return node
-        return self.minmum(node.left)
+        return self.minimum(node.left)
 
     def remove(self, node, key):
         if not node:
@@ -129,18 +141,20 @@ class AVTree:
             elif not node.right:
                 left_node = node.left
                 node.left = None
-                self._size -= 1
+                self.size -= 1
                 ret_node = left_node
             else:
                 successor = self.minimum(node.right)
                 successor.right = self.remove(node.right, successor.key)
-                successsor.left = node.left
+                successor.left = node.left
                 node.left = node.right = None
                 ret_node = successor
         if not ret_node:
             return
         ret_node.height = max(self.getHeight(ret_node.left),
                               self.getHeight(ret_node.right))+1
+
+        node.weight = self.getWeight(node.left)+self.getWeight(node.right)+1
         diff = self.LRHeightDiff(ret_node)
         if diff > 1 and self.LRHeightDiff(ret_node.left) >= 0:
             return self.RightRotate(ret_node)
@@ -158,13 +172,3 @@ class AVTree:
         node = self.getNode(self.root, key)
         if node:
             self.root = self.remove(self.root, key)
-
-    def updateWeight(self, node):
-        if not node:
-            return 0
-        else:
-            if node.left:
-                node.weight += self.updateWeight(node.left)
-            if node.right:
-                node.weight += self.updateWeight(node.right)
-            return node.weight

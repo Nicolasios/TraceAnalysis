@@ -82,33 +82,35 @@ class DataReader():
         return self.TimeDistance
 
     def getReuseDistance(self):
+        Hashmap = {}
         tree = AVTree()
         AppearIndex = {}
         for i in range(len(self.SliceTrace)):
+            if i == 36:
+                print(i)
             if self.SliceTrace[i] in AppearIndex.keys():
                 self.ReuseDistance.append(
-                    self.distance(tree, i))
-                tree.removeFromTree(i)
-                tree.updateWeight(tree.root)
+                    self.distance(tree, AppearIndex[self.SliceTrace[i]]))
+                tree.removeFromTree(AppearIndex[self.SliceTrace[i]])
+                tree.addToTree(i, self.SliceTrace[i])
                 AppearIndex[self.SliceTrace[i]] = i
             else:
                 tree.addToTree(i, self.SliceTrace[i])
-                tree.updateWeight(tree.root)
                 self.ReuseDistance.append(MAX)
                 AppearIndex[self.SliceTrace[i]] = i
         return self.ReuseDistance
 
     def distance(self, tree, timestamp):
         temp = tree.root
-        distance = 0
+        d = 0
         while temp is not None:
             if temp.key < timestamp:
                 temp = temp.right
             elif temp.key > timestamp:
                 d += 1
                 if temp.right:
-                    d += temp.right.weight
+                    d += tree.getWeight(temp.right)
                 temp = temp.left
             else:
-                d += temp.right.weight
-                return d
+                d += tree.getWeight(temp.right)
+                return d + 1
