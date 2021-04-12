@@ -1,7 +1,7 @@
 import pandas as pd
 from HelpClass.BalanceTree import AVTree
 
-MAX = 100000000
+MAX = 0
 
 
 class DataReader():
@@ -16,6 +16,9 @@ class DataReader():
         self.SliceTrace = []
         self.TimeDistance = []
         self.ReuseDistance = []
+        self.ReadNum = 0
+        self.WriteNum = 0
+        self.SumNum = 0
 
     def read(self):
         self.pd_reader = pd.read_csv(
@@ -86,8 +89,6 @@ class DataReader():
         tree = AVTree()
         AppearIndex = {}
         for i in range(len(self.SliceTrace)):
-            if i == 36:
-                print(i)
             if self.SliceTrace[i] in AppearIndex.keys():
                 self.ReuseDistance.append(
                     self.distance(tree, AppearIndex[self.SliceTrace[i]]))
@@ -114,3 +115,17 @@ class DataReader():
             else:
                 d += tree.getWeight(temp.right)
                 return d + 1
+
+    def ReaderAndWriteNum(self):
+        for row in self.pd_reader.iterrows():
+            if(row[1]['Type'] == "Write"):
+                self.WriteNum += 1
+            if(row[1]['Type'] == "Read"):
+                self.ReadNum += 1
+        return (self.WriteNum, self.ReadNum)
+
+    def IoNumSum(self):
+        self.SumNum = self.WriteNum + self.ReadNum
+        return self.SumNum
+
+    def getSumSize(self):

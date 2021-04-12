@@ -1,46 +1,58 @@
 from HelpClass.DataReader import *
 import time
+import json
 
-reader = DataReader("msr-cambridge2/MSR-Cambridge/rsrch_0.csv")
+# rootname = ["msr-cambridge1/MSR-Cambridge/", "msr-cambridge2/MSR-Cambridge/"]
+# filename = [
+#     "hm_0.csv",
+#     "hm_1.csv",
+
+# ]
+
+reader = DataReader("msr-cambridge2/MSR-Cambridge/web_4.csv")
 reader.read()
 reader.getSliceTrace()
+IONums = reader.getIONums()
+
+
+with open("output/web_4_IoNums.txt", 'w') as f:
+    f.write(str(IONums))
 
 AddressAccessNums = reader.getAddressAccessNums()
+jsObj = json.dumps(AddressAccessNums, indent=4)
+fileObject = open("output/web_4_AdressNums.json", 'w')
+fileObject.write(jsObj)
+fileObject.close()  # 最终写入的json文件格式:
 
-# FrequenceClass = reader.getFrequenceClass()
+FrequenceClass = reader.getFrequenceClass()
+jsObj = json.dumps(FrequenceClass)
+fileObject = open("output/web_4_FrequenceClass.json", 'w')
+fileObject.write(jsObj)
+fileObject.close()  # 最终写入的json文件格式:
 
-# UniqueAddress = reader.getUniqueAddress()
+with open("output/web_4_UniqueAddress.txt", 'w') as f:
+    a = 0
+    for line in reader.getUniqueAddress():
+        a += 1
+        f.write(str(line)+" ")
+        if a == 10:
+            a = 0
+            f.write("\n")
 
-# IONums = reader.getIONums()
+with open("output/web_4_ReuseDistance.txt", 'w') as f:
+    a = 0
+    for line in reader.getReuseDistance():
+        a += 1
+        f.write(str(line)+" ")
+        if a == 10:
+            a = 0
+            f.write("\n")
 
-# ReuseDistance = reader.getReuseDistance()
-
-# Time = reader.getTimeDistance()
-
-print("AddressAccessNums")
-print(AddressAccessNums)
-
-# print("------------------------------------------------------------")
-
-# print("FrequenceClass")
-# print(FrequenceClass)
-
-# print("------------------------------------------------------------")
-
-# print("UniqueAddress")
-# print(UniqueAddress)
-
-# print("------------------------------------------------------------")
-
-# print("IONums")
-# print(IONums)
-
-# print("------------------------------------------------------------")
-
-# print("ReuseDistance")
-# print(ReuseDistance)
-
-# print("------------------------------------------------------------")
-
-# print("Time")
-# print(Time)
+with open("output/web_4_TimeDistance.txt", 'w') as f:
+    a = 0
+    for line in reader.getTimeDistance():
+        a += 1
+        f.write(str(line)+" ")
+        if a == 10:
+            a = 0
+            f.write("\n")
