@@ -39,6 +39,13 @@ class DataReader():
             self.IONums += row[1]['Size']/512
         return self.IONums
 
+    def getAddress(self):
+        dict = {}
+        for row in self.pd_reader.iterrows():
+            offset = row[1]['Offset']
+            dict[offset] = 1
+        return dict
+
     def getAddressAccessNums(self):
         for row in self.pd_reader.iterrows():
             blocks = row[1]['Size']/512
@@ -127,5 +134,3 @@ class DataReader():
     def IoNumSum(self):
         self.SumNum = self.WriteNum + self.ReadNum
         return self.SumNum
-
-    def getSumSize(self):
