@@ -1,5 +1,6 @@
 import pandas as pd
 from HelpClass.BalanceTree import AVTree
+import csv
 
 MAX = 0
 
@@ -16,52 +17,54 @@ class DataReader():
         self.SliceTrace = []
         self.TimeDistance = []
         self.ReuseDistance = []
+        self.Address = {}
         self.ReadNum = 0
         self.WriteNum = 0
         self.SumNum = 0
 
-    def read(self):
-        self.pd_reader = pd.read_csv(
-            self.filename,
-            names=[
-                'Timestamp', 'Hostname', 'DiskNumber', 'Type', 'Offset', 'Size', 'ResponseTime'
-            ],
-            header=None)
-
-    def getPdReader(self):
-        return self.pd_reader
-
-    def sub_trace_deal(self):
-        pass
-
-    def getIONums(self):
-        for row in self.pd_reader.iterrows():
-            self.IONums += row[1]['Size']/512
-        return self.IONums
-
-    def getAddress(self):
-        dict = {}
-        for row in self.pd_reader.iterrows():
-            offset = row[1]['Offset']
-            dict[offset] = 1
-        return dict
-
-    def getAddressAccessNums(self):
-        for row in self.pd_reader.iterrows():
-            blocks = row[1]['Size']/512
-            offset = row[1]['Offset']
+    def getPara(self):
+        file = open(self.filename)
+        csvfile = csv.reader(file)
+        for row in csvfile:
+            # IOnums:切分之后
+            self.IONums += (int)(row[5])/512
+            # io个数
+            self.SumNum = self.WriteNum+self.ReadNum
+            # 切分之后的地址
+            blocks = (int)(row[5])/512
+            offset = (int)(row[4])
             for i in range(int(blocks)):
                 if offset+i*512 in self.AddressAccessNum.keys():
                     self.AddressAccessNum[offset+i*512] += 1
                 else:
                     self.AddressAccessNum[offset+i*512] = 1
-        return self.AddressAccessNum
+            # SliceTrace
+            for k in range(int(int(row[5])/512)):
+                self.SliceTrace.append(int(row[4])+k*512)
+
+    def NoSliceTrace(self):
+        file = open(self.filename)
+        csvfile = csv.reader(file)
+        for row in csvfile:
+            # IOnums:切分之后
+            self.IONums += (int)(row[5])/512
+            # Address :切分前的地址
+            offset = int(row[4])
+            self.Address[offset] = 1
+            # 读写数
+            if(row[3] == "Write"):
+                self.WriteNum += 1
+            if(row[3] == "Read"):
+                self.ReadNum += 1
+        self.SumNum = self.WriteNum + self.ReadNum
+
+    def sub_trace_deal(self):
+        pass
 
     def getUniqueAddress(self):
         for key in self.AddressAccessNum:
             if self.AddressAccessNum[key] == 1:
                 self.UniqueAddressAccess.append(key)
-        return self.UniqueAddressAccess
 
     def getFrequenceClass(self):
         for key, value in self.AddressAccessNum.items():
@@ -69,14 +72,13 @@ class DataReader():
                 self.FrequenceClass[value] += 1
             else:
                 self.FrequenceClass[value] = 1
-        return self.FrequenceClass
 
     def getSliceTrace(self):
         SliceTrace = self.pd_reader['Offset'].values.tolist()
         TraceSize = self.pd_reader['Size'].values.tolist()
         size = len(TraceSize)
         for i in range(size):
-            for k in range(int(TraceSize[i]/521)):
+            for k in range(int(TraceSize[i]/512)):
                 self.SliceTrace.append(SliceTrace[i]+k*512)
         return self.SliceTrace
 
@@ -122,15 +124,3 @@ class DataReader():
             else:
                 d += tree.getWeight(temp.right)
                 return d + 1
-
-    def ReaderAndWriteNum(self):
-        for row in self.pd_reader.iterrows():
-            if(row[1]['Type'] == "Write"):
-                self.WriteNum += 1
-            if(row[1]['Type'] == "Read"):
-                self.ReadNum += 1
-        return (self.WriteNum, self.ReadNum)
-
-    def IoNumSum(self):
-        self.SumNum = self.WriteNum + self.ReadNum
-        return self.SumNum
