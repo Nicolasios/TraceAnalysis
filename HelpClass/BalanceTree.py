@@ -1,4 +1,4 @@
-from HelpClass.Node import Node
+from HelpClass.TreeNode import Node
 
 
 class AVTree:
