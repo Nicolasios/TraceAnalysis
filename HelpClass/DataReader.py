@@ -42,6 +42,13 @@ class DataReader():
             for k in range(int(int(row[5])/512)):
                 self.SliceTrace.append(int(row[4])+k*512)
 
+    def getSliceTrace(self):
+        file = open(self.filename)
+        csvfile = csv.reader(file)
+        for row in csvfile:
+            for k in range(int(int(row[5])/512)):
+                self.SliceTrace.append(int(row[4])+k*512)
+
     def NoSliceTrace(self):
         file = open(self.filename)
         csvfile = csv.reader(file)
@@ -72,15 +79,6 @@ class DataReader():
                 self.FrequenceClass[value] += 1
             else:
                 self.FrequenceClass[value] = 1
-
-    def getSliceTrace(self):
-        SliceTrace = self.pd_reader['Offset'].values.tolist()
-        TraceSize = self.pd_reader['Size'].values.tolist()
-        size = len(TraceSize)
-        for i in range(size):
-            for k in range(int(TraceSize[i]/512)):
-                self.SliceTrace.append(SliceTrace[i]+k*512)
-        return self.SliceTrace
 
     def getTimeDistance(self):
         AppearIndex = {}
