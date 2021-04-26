@@ -13,14 +13,14 @@ print(len(reader.SliceTrace))
 TwoQ = TwoQueue(reader.SliceTrace)
 
 missrate = []
-for cacheSize in range(1000, 10000000, 200000):
+for cacheSize in range(100, 2000, 100):
     t1 = time.time()
     miss, hit = TwoQ.getMissRate(cacheSize * OneM, blockSize)
     t2 = time.time()
     print(t2-t1)
     missrate.append(miss/(miss+hit))
 
-x_list = range(1000, 10000000, 200000)
+x_list = range(100, 2000, 100)
 y_list = missrate
 # 创建图并命名
 plt.figure('Line fig')
