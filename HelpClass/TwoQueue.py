@@ -27,8 +27,6 @@ class TwoQueue():
             FIFOQueueOutTemp = FIFOQueueOutHead
             LRUQueueTemp = LRUQueueHead
             for j in range(blockSize):
-                if j % 1000 == 0:
-                    print(j)
                 if i*blockSize+j >= len(self.slicetrace):
                     break
                 address = self.slicetrace[i*blockSize+j]
@@ -39,40 +37,37 @@ class TwoQueue():
                 if flag3:
                     hit += 1
                     # 获取要从LRU队列中删除且插到尾部的节点
-                    temp = hashmapLRU[address]
-                    for key in hashmapLRU:
-                        if hashmapLRU[key].next == temp:
-                            pre = hashmapLRU[key]
-                            break
+                    pre = hashmapLRU[address]
+                    temp = pre.next
                     pre.next = temp.next
-                    hashmapLRU[pre.data] = pre
                     if pre.next == None:
                         LRUQueueTemp = pre
+                        hashmapLRU.pop(address)
+                    else:
+                        hashmapLRU[pre.next.data] = pre
                     # 插到尾部
                     LRUQueueTemp.next = temp
                     temp.next = None
-                    hashmapLRU[address] = temp
+                    hashmapLRU[address] = LRUQueueTemp
                     LRUQueueTemp = LRUQueueTemp.next
                 # 在Aout中
                 elif flag2:
                     hit += 1
                     # 在Out队列删除该节点
-                    temp = hashmapOut[address]
-                    for key in hashmapOut:
-                        if hashmapOut[key].next == temp:
-                            pre = hashmapOut[key]
-                            break
+                    pre = hashmapOut[address]
+                    temp = pre.next
                     pre.next = temp.next
-                    hashmapOut[pre.data] = pre
-                    if pre.next == None:
-                        LRUQueueTemp = pre
-                    temp.next = None
                     hashmapOut.pop(address)
+                    if pre.next == None:
+                        FIFOQueueOutTemp = pre
+                    else:
+                        hashmapOut[pre.next.data] = pre
+                    QueueOut -= 1
                     # 添加到LRU中
                     # 如果LRU已经满了则发生替换，否则添加到队尾
                     if QueueLRU < cacheSize/2:
                         LRUQueueTemp.next = Node(temp.data)
-                        hashmapLRU[temp.data] = LRUQueueTemp.next
+                        hashmapLRU[temp.data] = LRUQueueTemp
                         LRUQueueTemp = LRUQueueTemp.next
                         QueueLRU += 1  # 个数加一
 
@@ -83,8 +78,8 @@ class TwoQueue():
                         hashmapLRU.pop(address_out)
                         LRUQueueHead.data = 0
                         # 插入到队尾，并移动队尾指针
-                        LRUQueueTemp.next = Node(address_out)
-                        hashmapLRU[address_out] = LRUQueueTemp.next
+                        LRUQueueTemp.next = Node(temp.data)
+                        hashmapLRU[temp.data] = LRUQueueTemp
                         LRUQueueTemp = LRUQueueTemp.next
 
                 elif flag1:
@@ -98,7 +93,7 @@ class TwoQueue():
                     if QueueIn < cacheSize/4:
                         miss += 1
                         FIFOQueueInTemp.next = Node(address)
-                        hashmapIn[address] = FIFOQueueInTemp.next
+                        hashmapIn[address] = FIFOQueueInTemp
                         FIFOQueueInTemp = FIFOQueueInTemp.next
                         QueueIn += 1
                     # 队列已经满了则要替换，并且插入到Out队列
@@ -106,18 +101,16 @@ class TwoQueue():
                         miss += 1
                         FIFOQueueInHead = FIFOQueueInHead.next
                         address_in = FIFOQueueInHead.data
-                        if address_in == 0:
-                            print("address == 0")
                         hashmapIn.pop(address_in)
                         FIFOQueueInHead.data = 0
                         FIFOQueueInTemp.next = Node(address)
-                        hashmapIn[address] = FIFOQueueInTemp.next
+                        hashmapIn[address] = FIFOQueueInTemp
                         FIFOQueueInTemp = FIFOQueueInTemp.next
                         # 插到Aout中
                         if QueueOut < cacheSize/4:
                             # Aout未满直接插入，计数器加一
                             FIFOQueueOutTemp.next = Node(address_in)
-                            hashmapOut[address_in] = FIFOQueueOutTemp.next
+                            hashmapOut[address_in] = FIFOQueueOutTemp
                             FIFOQueueOutTemp = FIFOQueueOutTemp.next
                             QueueOut += 1
                         else:
@@ -126,6 +119,6 @@ class TwoQueue():
                             hashmapOut.pop(FIFOQueueOutHead.data)
                             FIFOQueueOutHead.data = 0
                             FIFOQueueOutTemp.next = Node(address_in)
-                            hashmapOut[address_in] = FIFOQueueOutTemp.next
+                            hashmapOut[address_in] = FIFOQueueOutTemp
                             FIFOQueueOutTemp = FIFOQueueOutTemp.next
-            print(miss, hit)
+            return miss, hit
